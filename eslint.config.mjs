@@ -1,7 +1,6 @@
 import globals from 'globals'
 import pluginJs from '@eslint/js'
 import tseslint from 'typescript-eslint'
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 
 export default [
   { files: ['**/*.{js,mjs,cjs,ts}'] },
@@ -12,7 +11,6 @@ export default [
     files: ['**/*.js', 'dist', 'build', 'node_modules'],
     ...tseslint.configs.disableTypeChecked,
   },
-  eslintPluginPrettierRecommended,
   {
     rules: {
       '@typescript-eslint/interface-name-prefix': 'off',
