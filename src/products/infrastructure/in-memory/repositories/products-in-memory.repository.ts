@@ -13,12 +13,12 @@ export class ProductsInMemoryRepository
 {
   sortableFields: string[] = ['name', 'created_at']
 
-  findByName(name: string): Promise<ProductModel> {
+  async findByName(name: string): Promise<ProductModel> {
     const product = this.items.find(item => item.name === name)
     if (!product) {
       throw new NotFoundError(`Product not found using name ${name}`)
     }
-    return Promise.resolve(product)
+    return product
   }
   async findAllByIds(ProductIds: ProductId[]): Promise<ProductModel[]> {
     const existingProducts = []
@@ -55,3 +55,4 @@ export class ProductsInMemoryRepository
     return super._applySort(items, sort ?? 'created_at', sort_dir ?? 'desc')
   }
 }
+
