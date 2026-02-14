@@ -64,6 +64,10 @@ describe('InMemoryRepository unit tests', () => {
     await expect(sut.findById('fake id')).rejects.toThrow(
       new NotFoundError(`Model not found using ID fake id`),
     )
+    const id = randomUUID()
+    await expect(sut.findById(id)).rejects.toThrow(
+      new NotFoundError(`Model not found using ID ${id}`),
+    )
   })
 
   it('should find a new model by id', async () => {
