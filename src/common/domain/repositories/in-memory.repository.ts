@@ -15,7 +15,7 @@ export type CreateProps = {
   [key: string]: any
 }
 
-export abstract class InMemoryRepository<Model extends ModelProps, CreateProps>
+export abstract class InMemoryRepository<Model extends ModelProps>
   implements RepositoryInterface<Model, CreateProps>
 {
   items: Model[] = []
