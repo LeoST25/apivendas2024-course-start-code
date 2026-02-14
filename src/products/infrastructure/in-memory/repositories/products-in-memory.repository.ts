@@ -55,4 +55,3 @@ export class ProductsInMemoryRepository
     return super._applySort(items, sort ?? 'created_at', sort_dir ?? 'desc')
   }
 }
-
