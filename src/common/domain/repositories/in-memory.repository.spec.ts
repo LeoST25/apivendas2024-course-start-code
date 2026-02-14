@@ -117,4 +117,34 @@ describe('InMemoryRepository unit tests', () => {
       expect(sut.items.length).toBe(0)
     })
   })
+
+  describe('applyFilter', () => {
+    it('should no filter items when filter is null', async () => {
+      const items = [model]
+      const spyFilterMethod = jest.spyOn(items, 'filter' as any)
+      const result = await sut['_applyFilter'](items, null)
+      expect(spyFilterMethod).not.toHaveBeenCalled()
+      expect(result).toStrictEqual(items)
+    })
+
+    it('should filter the data using filter param', async () => {
+      const items = [
+        { id: randomUUID(), name: 'test', price: 10, created_at, updated_at },
+        { id: randomUUID(), name: 'TEST', price: 20, created_at, updated_at },
+        { id: randomUUID(), name: 'fake', price: 30, created_at, updated_at },
+      ]
+      const spyFilterMethod = jest.spyOn(items, 'filter' as any)
+      let result = await sut['_applyFilter'](items, 'TEST')
+      expect(spyFilterMethod).toHaveBeenCalledTimes(1)
+      expect(result).toStrictEqual([items[0], items[1]])
+
+      result = await sut['_applyFilter'](items, 'test')
+      expect(spyFilterMethod).toHaveBeenCalledTimes(2)
+      expect(result).toStrictEqual([items[0], items[1]])
+
+      result = await sut['_applyFilter'](items, 'no-filter')
+      expect(spyFilterMethod).toHaveBeenCalledTimes(3)
+      expect(result).toHaveLength(0)
+    })
+  })
 })
