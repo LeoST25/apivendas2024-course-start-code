@@ -1,6 +1,7 @@
 import { NotFoundError } from '@/common/domain/errors/not-found-error'
 import { ProductsInMemoryRepository } from './products-in-memory.repository'
 import { ProductsDataBuilder } from '../../testing/helpers/products-data-builder'
+import { ConflictError } from '@/common/domain/errors/conflict-error'
 
 describe('ProductsInMemoryRepository unit tests', () => {
   let sut: ProductsInMemoryRepository
@@ -25,6 +26,26 @@ describe('ProductsInMemoryRepository unit tests', () => {
       sut.items.push(data)
       const result = await sut.findByName('Curso nodejs')
       expect(result).toStrictEqual(data)
+    })
+  })
+
+  describe('conflictingName', () => {
+    it('should throw error when product found', async () => {
+      const data = ProductsDataBuilder({ name: 'Curso nodejs' })
+      sut.items.push(data)
+
+      await expect(() => sut.conflictingName('Curso nodejs')).rejects.toThrow(
+        new ConflictError('Name already used by another product'),
+      )
+
+      await expect(() =>
+        sut.conflictingName('Curso nodejs'),
+      ).rejects.toBeInstanceOf(ConflictError)
+    })
+
+    it('should not find a product by name', async () => {
+      expect.assertions(0)
+      await sut.conflictingName('Curso nodejs')
     })
   })
 })
