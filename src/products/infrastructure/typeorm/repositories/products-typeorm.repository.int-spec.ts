@@ -29,9 +29,7 @@ describe('ProductsTypeormRepository integration tests', () => {
         new NotFoundError(`Product not found using ID ${id}`),
       )
     })
-  })
 
-  describe('findById', () => {
     it('should finds a product by id', async () => {
       const data = ProductsDataBuilder({})
       const product = testDataSource.manager.create(Product, data)
@@ -40,6 +38,22 @@ describe('ProductsTypeormRepository integration tests', () => {
       const result = await ormRepository.findById(product.id)
       expect(result.id).toBe(product.id)
       expect(result.name).toBe(product.name)
+    })
+  })
+
+  describe('create', () => {
+    it('should create a new product object', () => {
+      const data = ProductsDataBuilder({ name: 'Product 1' })
+      const result = ormRepository.create(data)
+      expect(result.name).toBe(data.name)
+    })
+  })
+
+  describe('insert', () => {
+    it('should insert a new product', async () => {
+      const data = ProductsDataBuilder({ name: 'Product 1' })
+      const result = await ormRepository.insert(data)
+      expect(result.name).toBe(data.name)
     })
   })
 })
