@@ -8,7 +8,7 @@ import {
   ProductId,
   ProductsRepository,
 } from '@/products/domain/repositories/products.repository'
-import { Repository } from 'typeorm'
+import { In, Repository } from 'typeorm'
 import { Product } from '../entities/products.entity'
 import { dataSource } from '@/common/infrastructure/typeorm'
 import { NotFoundError } from '@/common/domain/errors/not-found-error'
@@ -31,7 +31,12 @@ export class ProductsTypeormRepository implements ProductsRepository {
   }
 
   findAllByIds(ProductsIds: ProductId[]): Promise<ProductModel[]> {
-    throw new Error('Method not implemented.')
+    const ids = ProductsIds.map(productId => productId.id)
+
+    const productsFound = this.productsRepository.find({
+      where: { id: In(ids) },
+    })
+    return productsFound
   }
 
   async conflictingName(name: string): Promise<void> {
