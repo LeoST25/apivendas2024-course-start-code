@@ -127,31 +127,50 @@ describe('ProductsTypeormRepository integration tests', () => {
         new ConflictError('Name used by another product'),
       )
     })
+  })
 
-    describe('findByAllIds', () => {
-      it('should return an empty array when not find the products', async () => {
-        const productsIds = [
-          { id: 'e0b242a9-9606-4b25-ad24-8e6e2207ae45' },
-          { id: randomUUID() },
-        ]
-        const result = await ormRepository.findAllByIds(productsIds)
-        expect(result).toEqual([])
-        expect(result).toHaveLength(0)
+  describe('findByAllIds', () => {
+    it('should return an empty array when not find the products', async () => {
+      const productsIds = [
+        { id: 'e0b242a9-9606-4b25-ad24-8e6e2207ae45' },
+        { id: randomUUID() },
+      ]
+      const result = await ormRepository.findAllByIds(productsIds)
+      expect(result).toEqual([])
+      expect(result).toHaveLength(0)
+    })
+
+    it('should find the products by the field', async () => {
+      const productsIds = [
+        { id: 'e0b242a9-9606-4b25-ad24-8e6e2207ae45' },
+        { id: randomUUID() },
+      ]
+
+      const data = ProductsDataBuilder({ id: productsIds[0].id })
+      const product = testDataSource.manager.create(Product, data)
+      await testDataSource.manager.save(product)
+
+      const result = await ormRepository.findAllByIds(productsIds)
+      expect(result).toHaveLength(1)
+    })
+  })
+
+  describe('search', () => {
+    it('should apply only pagination when the other params are null', async () => {
+      const arrange = Array(16).fill(ProductsDataBuilder({}))
+      arrange.map(element => delete element.id)
+      const data = testDataSource.manager.create(Product, arrange)
+      await testDataSource.manager.save(data)
+
+      const result = await ormRepository.search({
+        page: 1,
+        per_page: 15,
+        sort: null,
+        sort_dir: null,
+        filter: null,
       })
-
-      it('should find the products by the field', async () => {
-        const productsIds = [
-          { id: 'e0b242a9-9606-4b25-ad24-8e6e2207ae45' },
-          { id: randomUUID() },
-        ]
-
-        const data = ProductsDataBuilder({ id: productsIds[0].id })
-        const product = testDataSource.manager.create(Product, data)
-        await testDataSource.manager.save(product)
-
-        const result = await ormRepository.findAllByIds(productsIds)
-        expect(result).toHaveLength(1)
-      })
+      expect(result.total).toEqual(16)
+      expect(result.items.length).toEqual(15)
     })
   })
 })
