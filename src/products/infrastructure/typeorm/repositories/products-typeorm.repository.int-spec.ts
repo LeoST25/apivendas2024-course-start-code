@@ -127,5 +127,31 @@ describe('ProductsTypeormRepository integration tests', () => {
         new ConflictError('Name used by another product'),
       )
     })
+
+    describe('findByAllIds', () => {
+      it('should return an empty array when not find the products', async () => {
+        const productsIds = [
+          { id: 'e0b242a9-9606-4b25-ad24-8e6e2207ae45' },
+          { id: randomUUID() },
+        ]
+        const result = await ormRepository.findAllByIds(productsIds)
+        expect(result).toEqual([])
+        expect(result).toHaveLength(0)
+      })
+
+      it('should find the products by the field', async () => {
+        const productsIds = [
+          { id: 'e0b242a9-9606-4b25-ad24-8e6e2207ae45' },
+          { id: randomUUID() },
+        ]
+
+        const data = ProductsDataBuilder({ id: productsIds[0].id })
+        const product = testDataSource.manager.create(Product, data)
+        await testDataSource.manager.save(product)
+
+        const result = await ormRepository.findAllByIds(productsIds)
+        expect(result).toHaveLength(1)
+      })
+    })
   })
 })
